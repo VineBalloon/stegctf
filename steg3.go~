@@ -5,38 +5,39 @@ import (
 	"image/color"
 )
 
-// Steg2Encode generates the steg2 challenge image
-func Steg2Encode(src image.Image, in string) image.Image {
-	flag := []byte(in)
-	img := src.(*image.RGBA)
+// Steg3Encode generates the steg3 challenge image
+func Steg3Encode(src image.Image, in string) image.Image {
+	// encode half the message in both with half transparency
+	//enc1 := Steg1Encode(src, in[0:len(in)/2])
+	//enc2 := Steg2Encode(src, in[len(in)/2:len(in)])
 	var ctr = 0
 	var done = false
+
+	img := src.(*image.RGBA)
+	flag := []byte(in)
 	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			if !done && y%2 == 1 && x%2 == 1 {
+			if !done {
 				enc := flag[ctr]
-				dig1 := enc % 10
-				enc /= 10
-				dig2 := enc % 10
-				enc /= 10
-				dig3 := enc % 10
+				dig1 := enc
+				dig2 := enc
+				dig3 := enc
 
-				_, _, _, a := img.At(x, y).RGBA()
-				img.SetRGBA(x, y, color.RGBA{dig1, dig2, dig3, uint8(a)})
+				img.SetRGBA(x, y, color.RGBA{dig1, dig2, dig3, 0xff})
 				ctr++
 				if ctr == len(flag) {
 					done = true
 				}
 				continue
 			}
-			// leave it alone
+			img.SetRGBA(x, y, black)
 		}
 	}
 	return img
 }
 
-// Steg2Decode decodes the image assuming it was encoded using Steg2
-func Steg2Decode(img image.Image) string {
+// Steg3Decode decodes the image assuming it was encoded using Steg3
+func Steg3Decode(src, img image.Image) string {
 	res := []byte{}
 	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {

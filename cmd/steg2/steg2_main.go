@@ -12,11 +12,11 @@ import (
 
 var (
 	decode string
-	flag1  = "FLAG{yIng_MaIN_btw}"
+	flag2  = "FLAG{baK_1n_blAk}"
 )
 
 func init() {
-	flag.StringVar(&decode, "decode", "steg1.png", "use flag to specify the image to decode")
+	flag.StringVar(&decode, "decode", "steg2.png", "use flag to specify the image to decode")
 }
 
 func main() {
@@ -28,8 +28,8 @@ func main() {
 	if err != nil {
 		fmt.Println("No steg file detected, generating one...")
 
-		img = stegctf.Steg1Encode(image.NewRGBA(image.Rect(0, 0, 888, 888)), flag1)
-		file, err := os.Create("steg1.png")
+		img = stegctf.Steg2Encode(image.NewRGBA(image.Rect(0, 0, 888, 888)), flag2)
+		file, err := os.Create("steg2.png")
 		if err != nil {
 			return
 		}
@@ -40,7 +40,7 @@ func main() {
 	}
 	defer file.Close()
 
-	fmt.Println("Attempting to decode using steg1 encoding scheme...")
+	fmt.Println("Attempting to decode using steg2 encoding scheme...")
 	img, _, err = image.Decode(file)
-	fmt.Println("Flag is: " + stegctf.Steg1Decode(img))
+	fmt.Println("Flag is: " + stegctf.Steg2Decode(img))
 }

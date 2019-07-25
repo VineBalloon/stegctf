@@ -1,6 +1,7 @@
 package stegctf
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 )
@@ -30,13 +31,17 @@ func Steg1Encode(src image.Image, in string) image.Image {
 }
 
 // Steg1Decode decodes the image assuming it was encoded using Steg1
-func Steg1Decode(img image.Image) string {
+func Steg1Decode(src, img image.Image) string {
 	res := []byte{}
 	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			if x%2 == 0 && !(img.At(x, y) == white) {
-				pix, _, _, _ := img.At(x, y).RGBA()
-				res = append(res, byte(pix))
+			if x%2 == 0 && !(img.At(x, y) == src.At(x, y)) {
+				pix, _, _, a := img.At(x, y).RGBA()
+				if a == 0 {
+					continue
+				}
+				fmt.Println("(", x, y, ")", uint8(pix))
+				res = append(res, byte(uint8(pix)))
 			}
 		}
 	}

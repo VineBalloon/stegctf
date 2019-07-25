@@ -27,20 +27,18 @@ func Steg2Encode(src image.Image, in string) image.Image {
 				if ctr == len(flag) {
 					done = true
 				}
-				continue
 			}
-			// leave it alone
 		}
 	}
 	return img
 }
 
 // Steg2Decode decodes the image assuming it was encoded using Steg2
-func Steg2Decode(img image.Image) string {
+func Steg2Decode(src, img image.Image) string {
 	res := []byte{}
 	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			if y%2 == 1 && x == 420 && !(img.At(x, y) == black) {
+			if y%2 == 1 && x%2 == 1 && !(img.At(x, y) == src.At(x, y)) {
 				pix1, pix2, pix3, _ := img.At(x, y).RGBA()
 				res = append(res, byte(pix1+pix2*10+pix3*100))
 			}
